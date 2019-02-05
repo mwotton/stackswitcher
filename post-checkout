@@ -1,0 +1,37 @@
+#!/bin/bash
+
+ISBRANCH=$3
+
+unset GIT_DIR
+
+PREVIOUS=$(git reflog | awk 'NR==1{ print $6; exit }')
+CURRENT=$(git reflog | awk 'NR==1{ print $8; exit }')
+
+if [[ $ISBRANCH -ne  1 ]] ; then
+  exit 0
+fi
+
+if [[ $PREVIOUS == $CURRENT ]]; then
+  exit 0
+fi
+
+mkdir .stackbranches 2>/dev/null || true
+
+mv .stack-work ".stackbranches/$PREVIOUS"
+currentdir=".stackbranches/$CURRENT"
+
+if [ ! -d "$currentdir" ]; then
+  for basebranch in dev master; do
+    basebranchdir=".stackbranches/$basebranch"
+    if [ -d "$basebranchdir" ]; then
+      cp -R "$basebranchdir" "$currentdir";
+      break;
+    fi
+  done
+  # nothing! outrageous.
+  mkdir -p "$currentdir"
+fi
+
+# need this to avoid race conditions - otherwise some other stack process
+# might have created it already.
+mv -T "$currentdir" .stack-work

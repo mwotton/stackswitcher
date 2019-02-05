@@ -32,3 +32,7 @@ This is pretty close - unfortunately, because there are absolute paths in the st
 No bugs yet, because no code!
 
 TODO: think about the approach to profiling a little more carefully. arguably we could get the same effect by just opening up a new branch.
+
+
+meanwhile, the `post-checkout` shell command in the repo will work if you put it into the `.git/hooks` directory of your repo.
+
